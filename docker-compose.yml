@@ -15,7 +15,7 @@ services:
       - ./var/lib/mosquitto:/var/lib/mosquitto:rw
 
   influxdb:
-    image: influxdb:latest
+    image: influxdb:alpine
     container_name: influxdb
     ports:
       - "8083:8083"
