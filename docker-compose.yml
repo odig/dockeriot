@@ -2,7 +2,9 @@ version: '2'
 
 services:
   mqtt:
-    image: ansi/mosquitto
+    #image: ansi/mosquitto
+    build:
+      context: docker/mosquitto
     container_name: mosquitto
     ports:
       - 1883:1883
@@ -15,7 +17,9 @@ services:
       - ./var/lib/mosquitto:/var/lib/mosquitto:rw
 
   influxdb:
-    image: influxdb:alpine
+    #image: influxdb:alpine
+    build:
+      context: docker/influxdb
     container_name: influxdb
     ports:
       - "8083:8083"
@@ -29,7 +33,9 @@ services:
       - influxdb:/var/lib/influxdb
 
   node-red:
-    image: jamesbrink/node-red:latest
+    #image: jamesbrink/node-red:latest
+    build:
+      context: docker/node-red
     container_name: nodered
     ports:
       - "1880:1880"
@@ -42,7 +48,9 @@ services:
       - influxdb
 
   grafana:
-    image: grafana/grafana:latest
+    #image: grafana/grafana:latest
+    build:
+      context: docker/grafana
     container_name: grafana
     ports:
       - "3000:3000"
