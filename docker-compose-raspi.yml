@@ -1,0 +1,83 @@
+
+version: '2'
+
+services:
+  mqtt:
+    #image: ansi/mosquitto
+    build:
+      context: docker/mosquitto
+    container_name: mosquitto
+    ports:
+      - 1883:1883
+    entrypoint: /usr/local/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf
+    networks:
+        - iot
+    volumes:
+      - ./etc/mosquitto:/etc/mosquitto:ro
+      - ./var/log/mosquitto:/var/log/mosquitto:rw
+      - ./var/lib/mosquitto:/var/lib/mosquitto:rw
+
+  influxdb:
+    #image: influxdb:alpine
+    build:
+      context: docker/influxdb
+    container_name: influxdb
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+      - "8090:8090"
+    env_file:
+      - 'env.influxdb'
+    networks:
+      - iot
+    volumes:
+      - influxdb:/var/lib/influxdb
+
+  node-red:
+    #image: jamesbrink/node-red:latest
+    build:
+      context: docker/node-red
+    container_name: nodered
+    ports:
+      - "1880:1880"
+    volumes:
+      - node-red:/data
+    networks:
+      - iot
+    links:
+      - mqtt
+      - influxdb
+
+  grafana:
+    image: fg2it/grafana-armhf:v5.0.0
+    #build:
+    #  context: docker/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    env_file:
+      - 'env.grafana'
+    networks:
+      - iot
+    links:
+      - influxdb
+
+  homeetomqtt:
+    #image: xxx:0.0.0
+    build:
+      context: docker/homeeToMqtt
+    container_name: homeetomqtt
+    networks:
+      - iot
+    links:
+      - mqtt
+      - influxdb
+
+volumes:
+  influxdb:
+    driver: local
+  node-red:
+    driver: local
+  
+networks:
+  iot:

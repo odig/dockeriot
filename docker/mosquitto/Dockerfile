@@ -3,7 +3,7 @@ FROM buildpack-deps:stretch-curl
 ARG  MOSQUITTOVERSION
 ENV  MOSQUITTOVERSION 1.4.14
 
-MAINTAINER Ansgar Schmidt <ansgar.schmidt@gmx.net>
+MAINTAINER Gido Kuechler <gido@ukuechler.de>
 
 ENV DEBIAN_FRONTEND noninteractive
 

@@ -1,0 +1,10 @@
+{
+    "homeeUserName": "mqtt",
+    "homeePassword": "mqtt",
+    "homeeServer": "homee.fritz.box",
+    "mqttServer": "mqtt",
+    "mqttUserName": "mqtt",
+    "mqttPassword": "mqtt",
+    "publish": true,
+    "subscribe": true
+}

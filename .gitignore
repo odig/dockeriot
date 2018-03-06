@@ -1,1 +1,3 @@
 *~
+var/lib/mosquitto/mosquitto.db
+
