@@ -1,4 +1,3 @@
-
 version: '2'
 
 services:
@@ -6,7 +5,7 @@ services:
     #image: ansi/mosquitto
     build:
       context: docker/mosquitto
-    container_name: mosquitto
+    container_name: iot-mosquitto
     ports:
       - 1883:1883
     entrypoint: /usr/local/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf
@@ -16,12 +15,14 @@ services:
       - ./etc/mosquitto:/etc/mosquitto:ro
       - ./var/log/mosquitto:/var/log/mosquitto:rw
       - ./var/lib/mosquitto:/var/lib/mosquitto:rw
+      - iot-mqtt:/mosquitto/data:rw
+    restart: always
 
   influxdb:
     #image: influxdb:alpine
     build:
       context: docker/influxdb
-    container_name: influxdb
+    container_name: iot-influxdb
     ports:
       - "8083:8083"
       - "8086:8086"
@@ -31,42 +32,48 @@ services:
     networks:
       - iot
     volumes:
-      - influxdb:/var/lib/influxdb
-
-  node-red:
-    #image: jamesbrink/node-red:latest
-    build:
-      context: docker/node-red
-    container_name: nodered
-    ports:
-      - "1880:1880"
-    volumes:
-      - node-red:/data
-    networks:
-      - iot
-    links:
-      - mqtt
-      - influxdb
+      - iot-influxdb:/var/lib/influxdb
+    restart: always
 
   grafana:
     image: fg2it/grafana-armhf:v5.0.0
+    #image: grafana/grafana:latest
     #build:
     #  context: docker/grafana
-    container_name: grafana
+    container_name: iot-grafana
     ports:
       - "3000:3000"
     env_file:
       - 'env.grafana'
     networks:
       - iot
+    volumes:
+      - ./etc/grafana:/etc/grafana:rw
+      - ./var/lib/grafana:/var/lib/grafana:rw
     links:
+      - influxdb
+    restart: always
+
+  node-red:
+    #image: jamesbrink/node-red:latest
+    build:
+      context: docker/node-red
+    container_name: iot-nodered
+    ports:
+      - "1880:1880"
+    volumes:
+      - iot-node-red:/data
+    networks:
+      - iot
+    links:
+      - mqtt
       - influxdb
 
   homeetomqtt:
     #image: xxx:0.0.0
     build:
       context: docker/homeeToMqtt
-    container_name: homeetomqtt
+    container_name: iot-homeetomqtt
     networks:
       - iot
     links:
@@ -74,9 +81,11 @@ services:
       - influxdb
 
 volumes:
-  influxdb:
+  iot-mqtt: 
     driver: local
-  node-red:
+  iot-influxdb:
+    driver: local
+  iot-node-red:
     driver: local
   
 networks:
