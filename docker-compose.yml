@@ -5,22 +5,25 @@ services:
     #image: ansi/mosquitto
     build:
       context: docker/mosquitto
-    container_name: mosquitto
+    container_name: iot-mqtt
     ports:
       - 1883:1883
+      - 1884:1884
     entrypoint: /usr/local/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf
     networks:
-        - iot
+      iot:
+        ipv4_address: 172.18.19.2
     volumes:
-      - ./etc/mosquitto:/etc/mosquitto:ro
+      - ./etc/mosquitto:/etc/mosquitto:rw
       - ./var/log/mosquitto:/var/log/mosquitto:rw
       - ./var/lib/mosquitto:/var/lib/mosquitto:rw
+    restart: always
 
   influxdb:
     #image: influxdb:alpine
     build:
       context: docker/influxdb
-    container_name: influxdb
+    container_name: iot-influxdb
     ports:
       - "8083:8083"
       - "8086:8086"
@@ -28,44 +31,125 @@ services:
     env_file:
       - 'env.influxdb'
     networks:
-      - iot
+      iot:
+        ipv4_address: 172.18.19.3
     volumes:
       - influxdb:/var/lib/influxdb
+    restart: always
 
   node-red:
     #image: jamesbrink/node-red:latest
     build:
       context: docker/node-red
-    container_name: nodered
+    container_name: iot-nodered
     ports:
       - "1880:1880"
     volumes:
       - node-red:/data
+      #- node-red2:/data2
     networks:
-      - iot
+      iot:
+        ipv4_address: 172.18.19.4
     links:
       - mqtt
       - influxdb
+    restart: always
 
   grafana:
     #image: grafana/grafana:latest
     build:
       context: docker/grafana
-    container_name: grafana
+    container_name: iot-grafana
     ports:
       - "3000:3000"
     env_file:
       - 'env.grafana'
+    volumes:
+      - ./etc/homeeToMqtt:/etc/homeeToMqtt:ro
     networks:
-      - iot
+      iot:
+        ipv4_address: 172.18.19.5
     links:
       - influxdb
+    restart: always
+
+  homeetomqtt:
+    #image: xxx:0.0.0
+    build:
+      context: docker/homeeToMqtt
+    container_name: iot-homeetomqtt
+    volumes:
+      - ./etc/homeeToMqtt:/etc/homeeToMqtt:ro
+    networks:
+      iot:
+        ipv4_address: 172.18.19.6
+    links:
+      - mqtt
+      - influxdb
+    restart: always
+
+  homeeup:
+    #image: xxx:0.0.0
+    build:
+      context: docker/homeeup
+    container_name: iot-homeeup
+    volumes:
+      - ./etc/homeeup/config.json:/home/homeeup/.homeeup/config.json:ro
+    networks:
+      iot:
+        ipv4_address: 172.18.19.7
+    ports:
+      - "2001:2001"
+    links:
+      - mqtt
+    restart: always
+
+  iobroker:
+    image: athalis/iobroker
+    container_name: iot-iobroker
+    volumes:
+      - iobroker:/opt/iobroker/iobroker-data
+    networks:
+      iot:
+        ipv4_address: 172.18.19.8
+    ports:
+      - "8081:8081"
+    links:
+      - mqtt
+      - influxdb
+    restart: always
+
+  kostaltomqtt:
+    #image: xxx:0.0.0
+    build:
+      context: docker/kostalToMqtt
+    container_name: iot-kostaltomqtt
+    volumes:
+      - ./etc/kostalToMqtt:/etc/kostalToMqtt:ro
+    networks:
+      iot:
+        ipv4_address: 172.18.19.9
+    links:
+      - mqtt
+    restart: always
 
 volumes:
-  influxdb:
-    driver: local
-  node-red:
-    driver: local
-  
+    influxdb:
+      driver: local
+    chronograf:
+      driver: local
+    node-red:
+      driver: local
+    #node-red2:
+    #  driver: local
+    iobroker:
+      driver: local
+
 networks:
   iot:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.19.0/24
+          gateway: 172.18.19.1      

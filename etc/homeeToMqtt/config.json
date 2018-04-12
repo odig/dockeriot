@@ -2,7 +2,7 @@
     "homeeUserName": "mqtt",
     "homeePassword": "mqtt",
     "homeeServer": "homee.fritz.box",
-    "mqttServer": "ds1515.fritz.box",
+    "mqttServer": "172.18.19.2",
     "mqttUserName": "mqtt",
     "mqttPassword": "mqtt",    
     "publish": true,

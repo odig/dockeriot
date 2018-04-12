@@ -24,7 +24,8 @@ RUN rm -rf /home/node-red \
     && npm install --unsafe-perm \
     && npm cache clean --force\
     && mkdir -p /data \
-    && chown -R node-red:node-red /data /home/node-red
+    && mkdir -p /data2 \
+    && chown -R node-red:node-red /data2 /data /home/node-red
 
 WORKDIR /home/node-red
 USER node-red

@@ -1,0 +1,58 @@
+{
+    "hostAddress": "172.18.19.7",
+    "plugins": [
+        {
+            "deviceName": "CMDSwitchMqtt1",
+            "type": "SimpleMQTTPlugin",
+            "pluginParams": {
+                "mqttServer": "172.18.19.2",
+                "mqttUserName": "mqtt",
+                "mqttPassword": "mqtt",
+                "mqttMessageMode": "value",
+                "mqttOnTopic": "homeeup/CMDSwitchMqtt1"
+            }
+        },
+        {
+            "deviceName": "Kostal",
+            "type": "SimpleMQTTPlugin",
+            "pluginParams": {
+                "mqttServer": "172.18.19.2",
+                "mqttUserName": "mqtt",
+                "mqttPassword": "mqtt",
+                "mqttMessageMode": "value",
+                "mqttPublishOnTopic": "dummy/kostal/status",
+                "mqttPublishOffTopic": "dummy/kostal/status",
+                "mqttSubscribeOnTopic": "kostal/status",
+                "mqttSubscribeOffTopic": "kostal/status"
+            }
+        },        
+        {
+            "deviceName": "Xiaomi0",
+            "type": "SimpleMQTTPlugin",
+            "pluginParams": {
+                "mqttServer": "172.18.19.2",
+                "mqttUserName": "mqtt",
+                "mqttPassword": "mqtt",
+                "mqttMessageMode": "state",
+                "mqttPublishOnTopic": "mihome-vacuum/0/control/start/set",
+                "mqttPublishOffTopic": "mihome-vacuum/0/control/pause/set",
+                "mqttSubscribeOnTopic": "iobroker/mqtt.0/mihome-vacuum/0/control/start/set",
+                "mqttSubscribeOffTopic": "iobroker/mqtt.0/mihome-vacuum/0/control/pause/set"
+            }
+        },
+        {
+            "deviceName": "Xiaomi1",
+            "type": "SimpleMQTTPlugin",
+            "pluginParams": {
+                "mqttServer": "172.18.19.2",
+                "mqttUserName": "mqtt",
+                "mqttPassword": "mqtt",
+                "mqttMessageMode": "state",
+                "mqttPublishOnTopic": "mihome-vacuum/1/control/start/set",
+                "mqttPublishOffTopic": "mihome-vacuum/1/control/pause/set",
+                "mqttSubscribeOnTopic": "iobroker/mqtt.0/mihome-vacuum/1/control/start/set",
+                "mqttSubscribeOffTopic": "iobroker/mqtt.0/mihome-vacuum/1/control/pause/set"
+            }
+        }
+    ]
+}

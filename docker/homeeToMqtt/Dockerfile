@@ -16,15 +16,14 @@ RUN rm -rf /home/homeetomqtt \
     && cd /home/homeetomqtt \
     && git clone https://github.com/odig/homeeToMqtt.git \
     && cd homeeToMqtt \
+    && git checkout develop \
     && npm install --unsafe-perm \
-    && npm cache clean --force\
+    && npm cache clean --force \
     && chown -R homeetomqtt:homeetomqtt /home/homeetomqtt
 
 WORKDIR /home/homeetomqtt/homeeToMqtt
-COPY config.json /home/homeetomqtt/homeeToMqtt
+#COPY config.json /home/homeetomqtt/homeeToMqtt
 
 USER homeetomqtt
-VOLUME ["/data"]
-EXPOSE 1880
 
 CMD node app.js
